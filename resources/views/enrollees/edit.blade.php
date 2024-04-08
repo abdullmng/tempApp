@@ -306,7 +306,8 @@
                                             </div>
                                         </div>
                                         <div>
-                                            <a href="javascript:void" class="btn btn-primary" onclick="initiateCamera()">Start Camera</a>
+                                            <a href="javascript:void" class="btn btn-primary" onclick="intitiateSelfieCamera()">Start Front Camera</a>
+                                            <a href="javascript:void" class="btn btn-primary d-lg-none" onclick="initiateBackCamera()">Start Back Camera</a>
                                             <a href="javascript:void" style="display: none" class="btn btn-danger stop-cam" onclick="stopCamera()">Stop Camera</a>
                                             <a href="javascript:void" class="btn btn-warning snap" onclick="takeSnapShot()">Snap photo</a>
                                         </div>
@@ -318,7 +319,23 @@
                                         <input type="file" name="picture" id="picture" class="form-control" capture>
                                     </div>`)
     }
-    function initiateCamera()
+    function initiateBackCamera()
+    {
+        Webcam.set({
+            width: 320,
+            height: 240,
+            crop_width: 240,
+            crop_height: 240,
+            image_format: 'jpeg',
+            jpeg_quality: 90,
+            constraints: {
+                facingMode: "environment"
+            }
+        });
+        Webcam.attach( '.camera' );
+        $('.stop-cam').show();
+    }
+    function intitiateSelfieCamera()
     {
         Webcam.set({
             width: 320,
