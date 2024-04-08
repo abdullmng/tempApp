@@ -343,10 +343,7 @@
             crop_width: 240,
             crop_height: 240,
             image_format: 'jpeg',
-            jpeg_quality: 90,
-            constraints: {
-                facingMode: "environment"
-            }
+            jpeg_quality: 90
         });
         Webcam.attach( '.camera' );
         $('.stop-cam').show();
