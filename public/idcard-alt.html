@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ID Card Template</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Reset default styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* ID card styles */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f5f5f5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.card {
+    width: 360px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.header {
+    background-color: #0074D9;
+    color: #ffffff;
+    padding: 20px;
+    text-align: center;
+}
+
+.header img {
+    max-width: 80px;
+    margin-bottom: 10px;
+}
+
+.content {
+    padding: 20px;
+    align-items: center;
+    align-content: center;
+    text-align: center;
+}
+
+.content h2 {
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+.qr-code {
+    text-align: center;
+    padding: 20px;
+}
+
+.qr-code img {
+    max-width: 100px;
+}
+
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="header">
+            <img src="https://th.bing.com/th/id/R.572e4f51d0a4d67669784df53026b5a7?rik=lv9i04y8yl33Dg&riu=http%3a%2f%2fupload.wikimedia.org%2fwikipedia%2fcommons%2f3%2f33%2fVanamo_Logo.png&ehk=Ix3NOUWRAegY6L3gmUWwTNm0Gee%2faq3jB0ZwGhiKFRk%3d&risl=&pid=ImgRaw&r=0" alt="Company Logo">
+            <h1>Your Company Name</h1>
+        </div>
+        <div class="content">
+            <img src="https://th.bing.com/th/id/OIP.AbGafkazjc_S1pZPh0B9cQHaIm?rs=1&pid=ImgDetMain" alt="User Photo" width="100" height="100">
+            <h2>John Doe</h2>
+            <p>Position: Senior Developer</p>
+            <p>Email: john.doe@example.com</p>
+            <!-- Add more customizable fields here -->
+        </div>
+        <div class="qr-code">
+            <!-- Insert your QR code image here -->
+            <img src="https://th.bing.com/th/id/OIP.NDKNbQ-I9ApLLVp-E6HSPwHaHa?rs=1&pid=ImgDetMain" alt="QR Code">
+        </div>
+    </div>
+</body>
+</html>
