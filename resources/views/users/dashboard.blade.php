@@ -3,45 +3,7 @@
 @section('content')
 <div class="row">
     <!-- Row #1 -->
-    <div class="col-6 col-xl-3">
-      <a class="block block-rounded block-link-shadow text-end" href="javascript:void(0)">
-        <div class="block-content block-content-full d-sm-flex justify-content-between align-items-center">
-          <div class="d-none d-sm-block">
-            <i class="fa fa-shopping-bag fa-2x opacity-25"></i>
-          </div>
-          <div>
-            <div class="fs-3 fw-semibold">1500</div>
-            <div class="fs-sm fw-semibold text-uppercase text-muted">Sales</div>
-          </div>
-        </div>
-      </a>
-    </div>
-    <div class="col-6 col-xl-3">
-      <a class="block block-rounded block-link-shadow text-end" href="javascript:void(0)">
-        <div class="block-content block-content-full d-sm-flex justify-content-between align-items-center">
-          <div class="d-none d-sm-block">
-            <i class="fa fa-wallet fa-2x opacity-25"></i>
-          </div>
-          <div>
-            <div class="fs-3 fw-semibold">$780</div>
-            <div class="fs-sm fw-semibold text-uppercase text-muted">Earnings</div>
-          </div>
-        </div>
-      </a>
-    </div>
-    <div class="col-6 col-xl-3">
-      <a class="block block-rounded block-link-shadow text-end" href="javascript:void(0)">
-        <div class="block-content block-content-full d-sm-flex justify-content-between align-items-center">
-          <div class="d-none d-sm-block">
-            <i class="fa fa-envelope-open fa-2x opacity-25"></i>
-          </div>
-          <div>
-            <div class="fs-3 fw-semibold">15</div>
-            <div class="fs-sm fw-semibold text-uppercase text-muted">Messages</div>
-          </div>
-        </div>
-      </a>
-    </div>
+    @can('can_view_enrollees')
     <div class="col-6 col-xl-3">
       <a class="block block-rounded block-link-shadow text-end" href="javascript:void(0)">
         <div class="block-content block-content-full d-sm-flex justify-content-between align-items-center">
@@ -49,112 +11,112 @@
             <i class="fa fa-users fa-2x opacity-25"></i>
           </div>
           <div>
-            <div class="fs-3 fw-semibold">4252</div>
-            <div class="fs-sm fw-semibold text-uppercase text-muted">Online</div>
+            <div class="fs-3 fw-semibold">{{ $data['total_enrollees'] }}</div>
+            <div class="fs-sm fw-semibold text-uppercase text-muted">Total Enrollees</div>
           </div>
         </div>
       </a>
     </div>
+
+    @can('can_view_branches')
+    @foreach ($data['branches'] as $branch)
+    <div class="col-6 col-xl-3">
+      <a class="block block-rounded block-link-shadow text-end" href="javascript:void(0)">
+        <div class="block-content block-content-full d-sm-flex justify-content-between align-items-center">
+          <div class="d-none d-sm-block">
+            <i class="fa fa-users fa-2x opacity-25"></i>
+          </div>
+          <div>
+            <div class="fs-3 fw-semibold">{{ $branch->enrollees->count() }}</div>
+            <div class="fs-sm fw-semibold text-uppercase text-muted">{{ $branch->name }} Enrollees</div>
+          </div>
+        </div>
+      </a>
+    </div>
+    @endforeach
+    @endcan
+    @can('can_view_sectors')
+    @foreach ($data['sectors'] as $sector)
+    <div class="col-6 col-xl-3">
+      <a class="block block-rounded block-link-shadow text-end" href="javascript:void(0)">
+        <div class="block-content block-content-full d-sm-flex justify-content-between align-items-center">
+          <div class="d-none d-sm-block">
+            <i class="fa fa-users fa-2x opacity-25"></i>
+          </div>
+          <div>
+            <div class="fs-3 fw-semibold">{{ $sector->enrollees->count() }}</div>
+            <div class="fs-sm fw-semibold text-uppercase text-muted">{{ $sector->name }} Sector</div>
+          </div>
+        </div>
+      </a>
+    </div>
+    @endforeach
+    @endcan
+    @endcan
+    @can('can_view_users')
+    <div class="col-6 col-xl-3">
+      <a class="block block-rounded block-link-shadow text-end" href="javascript:void(0)">
+        <div class="block-content block-content-full d-sm-flex justify-content-between align-items-center">
+          <div class="d-none d-sm-block">
+            <i class="fa fa-user fa-2x opacity-25"></i>
+          </div>
+          <div>
+            <div class="fs-3 fw-semibold">{{ $data['users'] }}</div>
+            <div class="fs-sm fw-semibold text-uppercase text-muted">Total Users</div>
+          </div>
+        </div>
+      </a>
+    </div>
+    @endcan
     <!-- END Row #1 -->
   </div>
+  @can('can_view_enrollees')
   <div class="row">
     <!-- Row #2 -->
     <div class="col-md-6">
       <div class="block block-rounded">
         <div class="block-header">
           <h3 class="block-title">
-            Sales <small>This week</small>
+            Enrollees <small>Over the Last 7days</small>
           </h3>
           <div class="block-options">
-            <button type="button" class="btn-block-option" data-toggle="block-option" data-action="state_toggle" data-action-mode="demo">
+            <button type="button" class="btn-block-option" data-toggle="block-option" data-action="state_toggle" data-action-mode="demo" onclick="loadData()">
               <i class="si si-refresh"></i>
             </button>
-            <button type="button" class="btn-block-option">
-              <i class="si si-wrench"></i>
-            </button>
           </div>
         </div>
-        <div class="block-content p-1 bg-body-light">
+        <div class="block-content block-content-full p-1 bg-body-light">
           <!-- Chart.js Chart is initialized in js/pages/be_pages_dashboard.min.js which was auto compiled from _js/pages/be_pages_dashboard.js -->
           <!-- For more info and examples you can check out http://www.chartjs.org/docs/ -->
-          <canvas id="js-chartjs-dashboard-lines" style="height: 290px"></canvas>
+          <canvas id="enrolleesChart" style=""></canvas>
         </div>
-        <div class="block-content">
-          <div class="row items-push">
-            <div class="col-6 col-sm-4 text-center text-sm-start">
-              <div class="fs-sm fw-semibold text-uppercase text-muted">This Month</div>
-              <div class="fs-4 fw-semibold">720</div>
-              <div class="fw-semibold text-success">
-                <i class="fa fa-caret-up"></i> +16%
-              </div>
-            </div>
-            <div class="col-6 col-sm-4 text-center text-sm-start">
-              <div class="fs-sm fw-semibold text-uppercase text-muted">This Week</div>
-              <div class="fs-4 fw-semibold">160</div>
-              <div class="fw-semibold text-danger">
-                <i class="fa fa-caret-down"></i> -3%
-              </div>
-            </div>
-            <div class="col-12 col-sm-4 text-center text-sm-start">
-              <div class="fs-sm fw-semibold text-uppercase text-muted">Average</div>
-              <div class="fs-4 fw-semibold">24.3</div>
-              <div class="fw-semibold text-success">
-                <i class="fa fa-caret-up"></i> +9%
-              </div>
-            </div>
-          </div>
-        </div>
+
       </div>
     </div>
     <div class="col-md-6">
       <div class="block block-rounded">
         <div class="block-header">
           <h3 class="block-title">
-            Earnings <small>This week</small>
+            Enrollees <small>Over the Last 7days</small>
           </h3>
           <div class="block-options">
-            <button type="button" class="btn-block-option" data-toggle="block-option" data-action="state_toggle" data-action-mode="demo">
+            <button type="button" class="btn-block-option" data-toggle="block-option" data-action="state_toggle" data-action-mode="demo" onclick="loadData()">
               <i class="si si-refresh"></i>
             </button>
-            <button type="button" class="btn-block-option">
-              <i class="si si-wrench"></i>
-            </button>
           </div>
         </div>
-        <div class="block-content p-1 bg-body-light">
+        <div class="block-content block-content-full p-1 bg-body-light">
           <!-- Chart.js Chart is initialized in js/pages/be_pages_dashboard.min.js which was auto compiled from _js/pages/be_pages_dashboard.js -->
           <!-- For more info and examples you can check out http://www.chartjs.org/docs/ -->
-          <canvas id="js-chartjs-dashboard-lines2" style="height: 290px"></canvas>
+          <canvas id="enrolleesBarChart" style=""></canvas>
         </div>
-        <div class="block-content">
-          <div class="row items-push">
-            <div class="col-6 col-sm-4 text-center text-sm-start">
-              <div class="fs-sm fw-semibold text-uppercase text-muted">This Month</div>
-              <div class="fs-4 fw-semibold">$ 6,540</div>
-              <div class="fw-semibold text-success">
-                <i class="fa fa-caret-up"></i> +4%
-              </div>
-            </div>
-            <div class="col-6 col-sm-4 text-center text-sm-start">
-              <div class="fs-sm fw-semibold text-uppercase text-muted">This Week</div>
-              <div class="fs-4 fw-semibold">$ 1,525</div>
-              <div class="fw-semibold text-danger">
-                <i class="fa fa-caret-down"></i> -7%
-              </div>
-            </div>
-            <div class="col-12 col-sm-4 text-center text-sm-start">
-              <div class="fs-sm fw-semibold text-uppercase text-muted">Balance</div>
-              <div class="fs-4 fw-semibold">$ 9,352</div>
-              <div class="fw-semibold text-success">
-                <i class="fa fa-caret-up"></i> +35%
-              </div>
-            </div>
-          </div>
-        </div>
+
       </div>
     </div>
     <!-- END Row #2 -->
   </div>
+  @endcan
+  {{--
   <div class="row">
     <!-- Row #3 -->
     <div class="col-md-4">
@@ -326,5 +288,64 @@
       </a>
     </div>
     <!-- END Row #5 -->
-  </div>
+  </div>--}}
 @endsection
+@can('can_view_enrollees')
+@section('js')
+  <script>
+    function loadData() 
+    {
+      $.ajax({
+          url: '{{ route("enrollment_data") }}',
+          type: 'GET',
+          success: function(response) {
+              //console.log(response.enrollmentCounts)
+              var ctxbar = document.getElementById('enrolleesBarChart');
+              var myBarChart = new Chart(ctxbar, {
+                  type: 'bar',
+                  data: {
+                      labels: response.dates,
+                      datasets: [{
+                          label: 'Enrollees',
+                          data: response.enrollmentCounts,
+                          backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                          borderColor: 'rgba(75, 192, 192, 1)',
+                          borderWidth: 1
+                      }]
+                  },
+                  options: {
+                      scales: {
+                        y: {
+                          beginAtZero: true
+                        }
+                      }
+                  }
+              });
+              var ctx = document.getElementById('enrolleesChart');
+              var myChart = new Chart(ctx, {
+                  type: 'line',
+                  data: {
+                      labels: response.dates,
+                      datasets: [{
+                          label: 'Enrollees',
+                          data: response.enrollmentCounts,
+                          backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                          borderColor: 'rgba(75, 192, 192, 1)',
+                          borderWidth: 1
+                      }]
+                  },
+                  options: {
+                      scales: {
+                          y: {
+                            beginAtZero: true
+                          }
+                      }
+                  }
+              });
+          }
+      })
+    }
+    loadData()
+  </script>
+@endsection
+@endcan

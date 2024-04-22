@@ -15,6 +15,21 @@
     </div>
 </div>
 <!-- END Heading -->
+@if (session()->has('success'))
+    <div
+        class="alert alert-success alert-dismissible fade show"
+        role="alert"
+    >
+        <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="alert"
+            aria-label="Close"
+        ></button>
+    
+        {{ session('success') }}
+    </div>
+@endif
 @foreach ($errors->all() as $error)
     <div
         class="alert alert-danger alert-dismissible fade show"
@@ -36,7 +51,12 @@
         <div class="block block-rounded">
             <div class="block-content block-content-full">
                 <div class="mb-4">
+                    @can(('can_create_enrollees'))
                     <button id="btn-add" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#enroll-modal">Add Enrollee +</button>
+                    @endcan
+                    @can(('can_bulk_import_enrollees'))
+                    <button class="btn btn-success" type="button" data-bs-toggle="modal" data-bs-target="#import-modal">Bulk Import</button>
+                    @endcan
                 </div>
                 <div class="table-responsive">
                     {!! $dataTable->table() !!}
@@ -48,6 +68,33 @@
 @endsection
 
 @section('modals')
+<div class="modal fade" id="import-modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="block block-rounded">
+                <div class="block-header">
+                    <h4 class="block-title">Bulk Import</h4>
+                    <a href="#" data-bs-dismiss="modal" class="btn-close"></a>
+                </div>
+                <div class="block-content">
+                    <form action="{{ route('enrollee.store_import') }}" method="post" enctype="multipart/form-data">
+                        @csrf
+                        <div class="mb-4">
+                            <a href="{{ route('enrollee.download') }}" class="btn btn-link">Download Bulk Import Template</a>
+                        </div>
+                        <div class="mb-4">
+                            <label for="file">Import File</label>
+                            <input type="file" name="file" id="file" class="form-control" accept="csv,xlsx">
+                        </div>
+                        <div class="mb-3">
+                            <button type="submit" class="btn btn-primary">Import Selected File</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
     <div class="modal fade" id="enroll-modal">
         <div class="modal-dialog">
             <div class="modal-content">

@@ -3,15 +3,21 @@
 namespace App\Http\Controllers;
 
 use App\DataTables\EnrolleesDataTable;
+use App\Exports\EnrolleeTemplate;
+use App\Imports\EnrolleesImport;
 use App\Models\BloodGroup;
 use App\Models\Branch;
 use App\Models\Category;
 use App\Models\Enrollee;
 use App\Models\Organisation;
 use App\Models\Sector;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
+use Maatwebsite\Excel\Facades\Excel;
+use Milon\Barcode\Facades\DNS2DFacade;
 
 class EnrolleeController extends Controller
 {
@@ -35,9 +41,8 @@ class EnrolleeController extends Controller
             'phone_number' => 'required',
             'date_of_birth' => 'required',
         ]);
-        $first_name_char = substr($request->first_name,0,1);
-        $last_name_char = substr($request->last_name, 0, 1);
-        $ref = $first_name_char. $last_name_char. date('ymdhis');
+        
+        $ref = $this->generateReference($request);
         $data = $request->except('_token');
         $data['reference'] = $ref;
         $data['enrolled_by'] = auth()->id();
@@ -47,6 +52,20 @@ class EnrolleeController extends Controller
 
         $enrollee = Enrollee::create($data);
         return redirect(route('user.enrollee', ['id' => $enrollee->id]))->with('success','Enrollee created successfully');
+    }
+
+    protected function generateReference($request)
+    {
+        $first_name_char = substr($request->first_name,0,1);
+        $last_name_char = substr($request->last_name, 0, 1);
+        $timestamp = date('ymdhis');
+        $reference = strtoupper($first_name_char.$last_name_char). $timestamp;
+        
+        if (Enrollee::where('reference', $reference)->exists())
+        {
+            return $this->generateReference($request);
+        }
+        return $reference;
     }
 
     public function show($id)
@@ -107,4 +126,74 @@ class EnrolleeController extends Controller
         $enrollee->update($data);
         return back()->with('success','Enrollee data updated successfully');
     }
+
+    public function downloadTemplate()
+    {
+        return Excel::download(new EnrolleeTemplate, 'enrolleeImportTemplate.xlsx');
+    }
+
+    public function storeImport(Request $request)
+    {
+        $request->validate([
+            'file' => 'required'
+        ]);
+
+        $file = $request->file('file');
+        Excel::import(new EnrolleesImport, $file);
+        return back()->with('success', 'Import completed');
+    }
+
+    public function printSlip($id)
+    {
+        $enrollee = Enrollee::find($id);
+        $qrcode = DNS2DFacade::getBarcodeHTML('https://'.request()->getHost().'/enrollees/slip/verify/'.$enrollee->reference.'', 'QRCode', 3, 3, 'navy');
+        return Pdf::loadView('enrollees.pdf.enrollment_slip', ['enrollee' => $enrollee, 'qr' => $qrcode])->stream('slip.pdf');
+    }
+
+    public function printIdCard($id)
+    {
+        $enrollee = Enrollee::find($id);
+        //$qrcode = DNS2DFacade::getBarcodeHTML('https://'.request()->getHost().'/enrollees/slip/verify/'.$enrollee->reference.'', 'QRCode', 3, 3, 'navy');
+        if (is_null($enrollee->picture))
+        {
+            return back()->withErrors(['picture' => 'Cannot generate ID Card, please capture an image.']);
+        }
+        return Pdf::loadView('enrollees.pdf.idcard', ['enrollee' => $enrollee/*, 'qr' => $qrcode*/])->stream('idcard.pdf');
+    }
+
+    public function verify($id)
+    {
+        $enrollee = Enrollee::where('reference',$id)->first();
+        $qrcode = DNS2DFacade::getBarcodeHTML('https://'.request()->getHost().'/enrollees/slip/verify/'.$enrollee->id.'', 'QRCode', 2.5, 2.5);
+        return view('enrollees.pdf.slip', ['enrollee' => $enrollee, 'qr' => $qrcode]);
+    }
+
+    public function enrollmentData(Request $request)
+{
+    $startDate = Carbon::now()->subDays(7)->startOfDay();
+    $endDate = Carbon::now()->endOfDay();
+
+    //dd($startDate, $endDate);
+    $enrollees = Enrollee::whereBetween('created_at', [$startDate, $endDate])
+                            ->orderBy('created_at')
+                            ->get();
+                     
+    $dates = $enrollees->pluck('created_at')->map(function ($date) {
+        return $date->format('Y-m-d');
+    })->unique()->values()->toArray();
+
+    $days = $enrollees->pluck('created_at')->map(function ($date) {
+        return $date->format('D');
+    })->unique()->values()->toArray();
+    
+    $enrollmentCounts = [];
+    foreach ($dates as $date) {
+        $enrollmentCounts[] = Enrollee::where('created_at', 'like', '%'. $date . '%')->count();
+    }
+
+    return response()->json([
+        'dates' => $days,
+        'enrollmentCounts' => $enrollmentCounts,
+    ]);
+}
 }

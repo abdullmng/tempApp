@@ -20,6 +20,22 @@
                 <span class="text-danger">{{ $errors->first('password') }}</span>
             @endif
         </div>
+        @if (session()->has('status'))
+            <div
+                class="alert alert-success alert-dismissible fade show"
+                role="alert"
+            >
+                <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert"
+                    aria-label="Close"
+                ></button>
+            
+                {{ session('status') }}
+            </div>
+            
+        @endif
         <div class="form-check mb-2">
             <input type="checkbox" class="form-check-input" name="remember" id="remember">
             <label for="remember" class="form-check-label">Remember me</label>
@@ -31,7 +47,7 @@
                 </button>
             </div>
             <div class="col-sm-12 mb-1">
-                <a class="btn btn-alt-secondary w-100" href="op_auth_reminder.html">
+                <a class="btn btn-alt-secondary w-100" href="{{ route('password.request') }}">
                     Forgot password
                 </a>
             </div>

@@ -140,7 +140,7 @@
           <!-- END Search -->
 
           <!-- Mini Stats -->
-          <div class="block pull-x">
+          {{--<div class="block pull-x">
             <div class="block-content block-content-full block-content-sm bg-body-light">
               <div class="row text-center">
                 <div class="col-4">
@@ -157,7 +157,7 @@
                 </div>
               </div>
             </div>
-          </div>
+          </div>--}}
           <!-- END Mini Stats -->
 
           <!-- Profile -->
@@ -171,7 +171,6 @@
               </div>
             </div>
             <div class="block-content block-content-full">
-              <form action="be_pages_dashboard.html" method="POST" onsubmit="return false;">
                 <div class="mb-3">
                   <label class="form-label" for="side-overlay-profile-name">Name</label>
                   <div class="input-group">
@@ -191,31 +190,23 @@
                   </div>
                 </div>
                 <div class="mb-3">
-                  <label class="form-label" for="side-overlay-profile-password">New Password</label>
+                  <label class="form-label" for="side-overlay-profile-password">Username</label>
                   <div class="input-group">
-                    <input type="password" class="form-control" id="side-overlay-profile-password" name="side-overlay-profile-password" placeholder="New Password..">
+                    <input type="text" class="form-control" id="side-overlay-profile-password" name="side-overlay-profile-password" placeholder="Username" value="{{ auth()->user()->username }}">
                     <span class="input-group-text">
-                      <i class="fa fa-asterisk"></i>
+                      <i class="fa fa-user"></i>
                     </span>
                   </div>
                 </div>
                 <div class="mb-3">
-                  <label class="form-label" for="side-overlay-profile-password-confirm">Confirm New Password</label>
+                  <label class="form-label" for="side-overlay-profile-password-confirm">Role</label>
                   <div class="input-group">
-                    <input type="password" class="form-control" id="side-overlay-profile-password-confirm" name="side-overlay-profile-password-confirm" placeholder="Confirm New Password..">
+                    <input type="text" class="form-control" id="side-overlay-profile-password-confirm" name="side-overlay-profile-password-confirm" placeholder="Role" value="{{ auth()->user()->roles[0]->name }}">
                     <span class="input-group-text">
-                      <i class="fa fa-asterisk"></i>
+                      <i class="fa fa-lock"></i>
                     </span>
                   </div>
                 </div>
-                <div class="row">
-                  <div class="col-6">
-                    <button type="submit" class="btn btn-alt-primary">
-                      <i class="fa fa-sync opacity-50 me-1"></i> Update
-                    </button>
-                  </div>
-                </div>
-              </form>
             </div>
           </div>
           <!-- END Profile -->
@@ -314,7 +305,7 @@
             <!-- END Toggle Sidebar -->
 
             <!-- Color Themes -->
-            <div class="dropdown d-inline-block">
+            {{-- <div class="dropdown d-inline-block">
               <button type="button" class="btn btn-sm btn-alt-secondary" id="page-header-themes-dropdown" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-haspopup="true" aria-expanded="false">
                 <i class="fa fa-fw fa-wrench"></i>
               </button>
@@ -359,7 +350,7 @@
                   </div>
                 </div>
               </div>
-            </div>
+            </div> --}}
             <!-- END Color Themes -->
           </div>
           <!-- END Left Section -->
@@ -385,8 +376,8 @@
                   <!-- Toggle Side Overlay -->
                   <!-- Layout API, functionality initialized in Template._uiApiLayout() -->
                   <a class="dropdown-item d-flex align-items-center justify-content-between space-x-1" href="javascript:void(0)" data-toggle="layout" data-action="side_overlay_toggle">
-                    <span>Settings</span>
-                    <i class="fa fa-fw fa-wrench opacity-25"></i>
+                    <span>Profile</span>
+                    <i class="fa fa-fw fa-user opacity-25"></i>
                   </a>
                   <!-- END Side Overlay -->
 
@@ -440,10 +431,10 @@
         <div class="content py-3">
           <div class="row fs-sm">
             <div class="col-sm-6 order-sm-2 py-1 text-center text-sm-end">
-              Crafted with <i class="fa fa-heart text-danger"></i> by <a class="fw-semibold" href="https://pixelcave.com" target="_blank">pixelcave</a>
+              {{-- Craftedwith<iclass="fafa-hearttext-danger"></i>by<aclass="fw-semibold"href="https://pixelcave.com"target="_blank">pixelcave</a> --}}
             </div>
             <div class="col-sm-6 order-sm-1 py-1 text-center text-sm-start">
-              <a class="fw-semibold" href="https://pixelcave.com/products/codebase" target="_blank">Codebase 5.7</a> &copy; <span data-toggle="year-copy"></span>
+              &copy; <span data-toggle="year-copy"></span> <a class="fw-semibold" href="#" target="_blank">{{ env('APP_NAME') }}</a> All Rights Reserved
             </div>
           </div>
         </div>
@@ -476,7 +467,6 @@
     <script src="{{ asset('assets/js/plugins/chart.js/chart.umd.js') }}"></script>
 
     <!-- Page JS Code -->
-    <script src="{{ asset('assets/js/pages/be_pages_dashboard.min.js') }}"></script>
     {{-- <scriptsrc="asset('assets/js/pages/be_tables_datatables.min.js') }}"></script>--}}
     <script src="{{ asset('webcam.min.js') }}"></script>
     <script src="{{ asset('cookies.js') }}"></script>

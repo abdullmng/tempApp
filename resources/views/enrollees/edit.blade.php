@@ -51,6 +51,14 @@
                 <div class="block block-rounded">
                     <div class="block-content block-content-full">
                         <h3 class="block-title mb-4">Enrollee Personal Data</h3>
+                        <div class="mb-4">
+                            @if(auth()->user()->hasPermissionTo('can_print_enrollee_slip'))
+                            <a href="{{ route('enrollee.print_slip', $enrollee->id) }}" class="btn btn-primary" target="__blank">Print Enrollee Slip</a>
+                            @endif
+                            @if(auth()->user()->hasPermissionTo('can_print_enrollee_id_card'))
+                            <a href="{{ route('enrollee.print_id', $enrollee->id) }}" class="btn btn-primary" target="__blank">Print ID Card</a>
+                            @endif
+                        </div>
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="mb-3">
@@ -166,8 +174,13 @@
                                     </select>
                                 </div>
                                 <div class="mb-3">
-                                    <div>
-                                        <img src="{{ $enrollee->picture }}" alt="picture" class="img-fluid w-25">
+                                    <div class="camera-container">
+                                        <div>
+                                            <img src="{{ $enrollee->picture }}" alt="picture" class="img-fluid w-25">
+                                        </div>
+                                        <div class="result">
+        
+                                        </div>
                                     </div>
                                     <label for="picture">Picture </label>
                                     <div class="mb-3 mt-3">
@@ -246,7 +259,7 @@
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="organisation">Organisation</label>
-                                    <input type="text" name="organisation" id="organisation" class="form-control">
+                                    <input type="text" name="organization" id="organisation" class="form-control">
                                 </div>
                                 <div class="mb-3">
                                     <label for="date_of_first_appointment">Date of First Appointment</label>
@@ -300,9 +313,6 @@
                                         <div class="camera-container">
                                             <div class="camera">
 
-                                            </div>
-                                            <div class="result">
-    
                                             </div>
                                         </div>
                                         <div>

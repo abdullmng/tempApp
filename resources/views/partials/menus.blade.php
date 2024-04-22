@@ -5,18 +5,100 @@
         <span class="nav-main-link-name">Dashboard</span>
       </a>
     </li>
+    @if(auth()->user()->hasPermissionTo('can_view_enrollees'))
     <li class="nav-main-item {{ request()->routeIs('user.enrollees') ? 'open' : '' }}">
       <a class="nav-main-link nav-main-link-submenu" data-toggle="submenu" aria-haspopup="true" aria-expanded="false" href="#">
         <i class="nav-main-link-icon fa fa-users"></i>
         <span class="nav-main-link-name">Enrollee Management</span>
       </a>
       <ul class="nav-main-submenu">
+        @can('can_view_enrollees')
         <li class="nav-main-item">
           <a class="nav-main-link {{ request()->routeIs('user.enrollees') ? 'active' : '' }}" href="{{ route('user.enrollees') }}">
             <span class="nav-main-link-name">Enrollees</span>
           </a>
         </li>
+        @endcan
       </ul>
+    </li>
+    @endif
+    @if(auth()->user()->hasPermissionTo('can_view_users') || auth()->user()->hasPermissionTo('can_view_roles'))
+    <li class="nav-main-item {{ request()->routeIs('user.index') ? 'open' : '' }} {{ request()->routeIs('access.index') ? 'open' : '' }}">
+      <a class="nav-main-link nav-main-link-submenu" data-toggle="submenu" aria-haspopup="true" aria-expanded="false" href="#">
+        <i class="nav-main-link-icon fa fa-user"></i>
+        <span class="nav-main-link-name">User Management</span>
+      </a>
+      <ul class="nav-main-submenu">
+        @can(('can_view_users'))
+        <li class="nav-main-item">
+          <a class="nav-main-link {{ request()->routeIs('user.index') ? 'active' : '' }}" href="{{ route('user.index') }}">
+            <span class="nav-main-link-name">Users</span>
+          </a>
+        </li>
+        @endcan
+        @can(('can_view_roles'))
+        <li class="nav-main-item">
+          <a class="nav-main-link {{ request()->routeIs('access.index') ? 'active' : '' }}" href="{{ route('access.index') }}">
+            <span class="nav-main-link-name">Roles</span>
+          </a>
+        </li>
+        @endcan
+      </ul>
+    </li>
+    @endif
+    @can('can_view_branches')
+    <li class="nav-main-item">
+      <a class="nav-main-link {{ request()->routeIs('branch.index') ? 'active': '' }}" href="{{ route('branch.index') }}">
+        <i class="nav-main-link-icon fa fa-building"></i>
+        <span class="nav-main-link-name">Manage Branches</span>
+      </a>
+    </li>
+    @endcan
+    @can(('can_view_categories'))
+    <li class="nav-main-item">
+      <a class="nav-main-link {{ request()->routeIs('category.index') ? 'active': '' }}" href="{{ route('category.index') }}">
+        <i class="nav-main-link-icon fa fa-list"></i>
+        <span class="nav-main-link-name">Manage Categories</span>
+      </a>
+    </li>
+    @endcan
+    @can(('can_view_sectors'))
+    <li class="nav-main-item">
+      <a class="nav-main-link {{ request()->routeIs('sector.index') ? 'active': '' }}" href="{{ route('sector.index') }}">
+        <i class="nav-main-link-icon fa fa-chart-simple"></i>
+        <span class="nav-main-link-name">Manage Sectors</span>
+      </a>
+    </li>
+    @endcan
+    @can(('can_view_organisations'))
+    <li class="nav-main-item">
+      <a class="nav-main-link {{ request()->routeIs('organisation.index') ? 'active': '' }}" href="{{ route('organisation.index') }}">
+        <i class="nav-main-link-icon fa fa-briefcase"></i>
+        <span class="nav-main-link-name">Manage Organisations</span>
+      </a>
+    </li>
+    @endcan
+    @can(('can_view_hcps'))
+    <li class="nav-main-item">
+      <a class="nav-main-link {{ request()->routeIs('hcp.index') ? 'active': '' }}" href="{{ route('hcp.index') }}">
+        <i class="nav-main-link-icon fa fa-plus"></i>
+        <span class="nav-main-link-name">Manage HCPs</span>
+      </a>
+    </li>
+    @endcan
+    @can(('can_view_reports'))
+    <li class="nav-main-item">
+      <a class="nav-main-link {{ request()->routeIs('report.index') ? 'active': '' }}" href="{{ route('report.index') }}">
+        <i class="nav-main-link-icon fa fa-clipboard"></i>
+        <span class="nav-main-link-name">Reports</span>
+      </a>
+    </li>
+    @endcan
+    <li class="nav-main-item">
+      <a class="nav-main-link {{ request()->routeIs('user.logout') ? 'active': '' }}" href="{{ route('user.logout') }}">
+        <i class="nav-main-link-icon fa fa-sign-out"></i>
+        <span class="nav-main-link-name">Logout</span>
+      </a>
     </li>
     <!--<li class="nav-main-item">
       <a class="nav-main-link nav-main-link-submenu" data-toggle="submenu" aria-haspopup="true" aria-expanded="false" href="#">

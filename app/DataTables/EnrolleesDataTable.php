@@ -26,9 +26,9 @@ class EnrolleesDataTable extends DataTable
                 return view('enrollees.partials.action', ['data' => $data]);
             })
             ->addColumn('picture', function ($data) {
-                return '<img src="'.$data->picture.'" class="img-fluid w-50" alt="image">';
+                return '<img src="'.$data->picture.'" class="img-fluid" style="width: 50px; height: 50px;" alt="image">';
             })
-            ->addColumn('date', function ($data) {
+            ->addColumn('created_at', function ($data) {
                 return $data->created_at->format('Y-m-d h:ia');
             })
             /*->addColumn('name', function ($data) {
@@ -40,9 +40,10 @@ class EnrolleesDataTable extends DataTable
     /**
      * Get the query source of dataTable.
      */
-    public function query(Enrollee $model)
+    public function query(Enrollee $model): QueryBuilder
     {
-        return $model->where('enrolled_by', auth()->id());
+        //return $model->where('enrolled_by', auth()->id());
+        return $model->newQuery();
     }
 
     /**
@@ -52,12 +53,12 @@ class EnrolleesDataTable extends DataTable
     {
         return $this->builder()
                     ->setTableId('enrollees-table')
-                    ->addTableClass('js-dataTable-responsive')
+                    ->addTableClass('responsive')
                     ->addTableClass('dataTable')
                     ->columns($this->getColumns())
                     ->minifiedAjax()
                     //->dom('Bfrtip')
-                    ->orderBy(1)
+                    ->orderBy(2)
                     ->selectStyleSingle()
                     ->buttons([
                         Button::make('excel'),
@@ -75,14 +76,14 @@ class EnrolleesDataTable extends DataTable
     public function getColumns(): array
     {
         return [
-            Column::make('id'),
             Column::computed('picture'),
+            Column::make('reference'),
             Column::make('first_name'),
             Column::make('middle_name'),
             Column::make('last_name'),
             Column::make('gender'),
             Column::make('phone_number'),
-            Column::computed('date'),
+            Column::computed('created_at'),
             Column::computed('action')
                   ->exportable(false)
                   ->printable(false)
