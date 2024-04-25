@@ -56,15 +56,39 @@ class EnrolleeController extends Controller
 
     protected function generateReference($request)
     {
+        $reference = $this->generateReferenceWithDob($request);
+        if (Enrollee::where('reference', $reference)->exists())
+        {
+            $reference = $this->generateReferenceWithTime($request);
+
+            if (Enrollee::where('reference', $reference)->exists())
+            {
+                $reference = $this->generateReference($request);
+            }
+        }
+        return $reference;
+    }
+
+    protected function generateReferenceWithTime($request)
+    {
         $first_name_char = substr($request->first_name,0,1);
         $last_name_char = substr($request->last_name, 0, 1);
         $timestamp = date('ymdhis');
         $reference = strtoupper($first_name_char.$last_name_char). $timestamp;
-        
-        if (Enrollee::where('reference', $reference)->exists())
-        {
-            return $this->generateReference($request);
-        }
+        return $reference;
+    }
+
+    protected function generateReferenceWithDob($request)
+    {
+        $year = Carbon::now()->year;
+        $dob = Carbon::parse($request->date_of_birth);
+        $yob = $dob->format('Y');
+        $age = $year - intval($yob);
+        $first_name_char = substr($request->first_name,0,1);
+        $last_name_char = substr($request->last_name, 0, 1);
+        $dob_append = str_replace('-','', $request->date_of_birth);
+        $arr = [0,1];
+        $reference = strtoupper($first_name_char.$last_name_char). substr($age,$arr[array_rand($arr, 1)], 1). $dob_append . substr($age,$arr[array_rand($arr, 1)], 1);
         return $reference;
     }
 
@@ -158,7 +182,18 @@ class EnrolleeController extends Controller
         {
             return back()->withErrors(['picture' => 'Cannot generate ID Card, please capture an image.']);
         }
-        return Pdf::loadView('enrollees.pdf.idcard', ['enrollee' => $enrollee/*, 'qr' => $qrcode*/])->stream('idcard.pdf');
+
+        $pdf = Pdf::loadView('enrollees.pdf.idcard', ['enrollee' => $enrollee/*, 'qr' => $qrcode*/]);
+        $pdf->getDomPDF()->setHttpContext(
+            stream_context_create([
+                'ssl' => [
+                    'allow_self_signed' => true,
+                    'verify_peer' => false,
+                    'verify_peer_name' => false
+                ]
+            ])
+        );
+        return $pdf->stream('idcard.pdf');
     }
 
     public function verify($id)
@@ -177,14 +212,15 @@ class EnrolleeController extends Controller
     $enrollees = Enrollee::whereBetween('created_at', [$startDate, $endDate])
                             ->orderBy('created_at')
                             ->get();
-                     
-    $dates = $enrollees->pluck('created_at')->map(function ($date) {
+    $days = [];
+    $dates = $enrollees->pluck('created_at')->map(function ($date){
         return $date->format('Y-m-d');
     })->unique()->values()->toArray();
 
-    $days = $enrollees->pluck('created_at')->map(function ($date) {
-        return $date->format('D');
-    })->unique()->values()->toArray();
+    foreach($dates as $date)
+    {
+        $days[] = Carbon::parse($date)->format('D');
+    }
     
     $enrollmentCounts = [];
     foreach ($dates as $date) {
