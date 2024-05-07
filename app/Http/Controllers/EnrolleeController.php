@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\DataTables\EnrolleesDataTable;
+use App\Exports\EnrolleesRawExport;
 use App\Exports\EnrolleeTemplate;
 use App\Imports\EnrolleesImport;
+use App\Imports\EnrolleesRawImport;
 use App\Models\BloodGroup;
 use App\Models\Branch;
 use App\Models\Category;
@@ -73,8 +75,10 @@ class EnrolleeController extends Controller
     {
         $first_name_char = substr($request->first_name,0,1);
         $last_name_char = substr($request->last_name, 0, 1);
+        $organisation = Organisation::where('id', $request->organisation_id)->first();
+        $area = substr($organisation->name, 0, 2);
         $timestamp = date('ymdhis');
-        $reference = strtoupper($first_name_char.$last_name_char). $timestamp;
+        $reference = strtoupper($first_name_char.$last_name_char.$area). $timestamp;
         return $reference;
     }
 
@@ -88,7 +92,9 @@ class EnrolleeController extends Controller
         $last_name_char = substr($request->last_name, 0, 1);
         $dob_append = str_replace('-','', $request->date_of_birth);
         $arr = [0,1];
-        $reference = strtoupper($first_name_char.$last_name_char). substr($age,$arr[array_rand($arr, 1)], 1). $dob_append . substr($age,$arr[array_rand($arr, 1)], 1);
+        $organisation = Organisation::where('id', $request->organisation_id)->first();
+        $area = substr($organisation->name, 0, 2);
+        $reference = strtoupper($first_name_char.$last_name_char.$area). substr($age,$arr[array_rand($arr, 1)], 1). $dob_append . substr($age,$arr[array_rand($arr, 1)], 1);
         return $reference;
     }
 
@@ -177,13 +183,18 @@ class EnrolleeController extends Controller
     public function printIdCard($id)
     {
         $enrollee = Enrollee::find($id);
-        //$qrcode = DNS2DFacade::getBarcodeHTML('https://'.request()->getHost().'/enrollees/slip/verify/'.$enrollee->reference.'', 'QRCode', 3, 3, 'navy');
+        $count = intval($enrollee->id_printout_count);
+        $count += 1;
+        //$qrcode = DNS2DFacade::getBarcodeHTML('https://'.request()->getHost().'/enrollees/slip/verify/'.$enrollee->reference.'', 'QRCode', 3, 3, 'green');
+        $qrcode = DNS2DFacade::getBarcodePNG('https://'.request()->getHost().'/enrollees/slip/verify/'.$enrollee->reference.'', 'QRCode', 3, 3);
         if (is_null($enrollee->picture))
         {
             return back()->withErrors(['picture' => 'Cannot generate ID Card, please capture an image.']);
         }
 
-        $pdf = Pdf::loadView('enrollees.pdf.idcard', ['enrollee' => $enrollee/*, 'qr' => $qrcode*/]);
+        //dd($qrcode);
+
+        $pdf = Pdf::loadView('enrollees.pdf.idcard', ['enrollee' => $enrollee, 'qr' => $qrcode]);
         $pdf->getDomPDF()->setHttpContext(
             stream_context_create([
                 'ssl' => [
@@ -193,6 +204,7 @@ class EnrolleeController extends Controller
                 ]
             ])
         );
+        $enrollee->update(['id_printout_count' => $count]);
         return $pdf->stream('idcard.pdf');
     }
 
@@ -204,32 +216,119 @@ class EnrolleeController extends Controller
     }
 
     public function enrollmentData(Request $request)
-{
-    $startDate = Carbon::now()->subDays(7)->startOfDay();
-    $endDate = Carbon::now()->endOfDay();
-
-    //dd($startDate, $endDate);
-    $enrollees = Enrollee::whereBetween('created_at', [$startDate, $endDate])
-                            ->orderBy('created_at')
-                            ->get();
-    $days = [];
-    $dates = $enrollees->pluck('created_at')->map(function ($date){
-        return $date->format('Y-m-d');
-    })->unique()->values()->toArray();
-
-    foreach($dates as $date)
     {
-        $days[] = Carbon::parse($date)->format('D');
-    }
-    
-    $enrollmentCounts = [];
-    foreach ($dates as $date) {
-        $enrollmentCounts[] = Enrollee::where('created_at', 'like', '%'. $date . '%')->count();
+        $startDate = Carbon::now()->subDays(7)->startOfDay();
+        $endDate = Carbon::now()->endOfDay();
+
+        //dd($startDate, $endDate);
+        $enrollees = Enrollee::whereBetween('created_at', [$startDate, $endDate])
+                                ->orderBy('created_at')
+                                ->get();
+        $days = [];
+        $dates = $enrollees->pluck('created_at')->map(function ($date){
+            return $date->format('Y-m-d');
+        })->unique()->values()->toArray();
+
+        foreach($dates as $date)
+        {
+            $days[] = Carbon::parse($date)->format('D');
+        }
+        
+        $enrollmentCounts = [];
+        foreach ($dates as $date) {
+            $enrollmentCounts[] = Enrollee::where('created_at', 'like', '%'. $date . '%')->count();
+        }
+
+        return response()->json([
+            'dates' => $days,
+            'enrollmentCounts' => $enrollmentCounts,
+        ]);
     }
 
-    return response()->json([
-        'dates' => $days,
-        'enrollmentCounts' => $enrollmentCounts,
-    ]);
-}
+    public function rawExportView()
+    {
+        $branches = Branch::all();
+        $sectors = Sector::all();
+        $organisations = Organisation::all();
+        return view('enrollees.raw_export', compact('branches', 'sectors', 'organisations'));
+    }
+
+    public function rawExport(Request $request)
+    {
+        $request->validate([
+            'branch' => 'nullable|integer',
+            'sector' => 'nullable|integer',
+            'category' => 'nullable|integer',
+            'organisation' => 'nullable|integer',
+            'hcp' => 'nullable|integer',
+            'date_from' => 'required|date_format:Y-m-d',
+            'date_to' => 'required|date_format:Y-m-d',
+        ]);
+
+        $branch = $request->branch;
+        $sector = $request->sector;
+        $category = $request->category;
+        $organisation = $request->organisation;
+        $hcp = $request->hcp;
+        $date_from = $request->date_from;
+        $date_to = $request->date_to;
+        $date_range = [$date_from, $date_to];
+
+        $query = Enrollee::query();
+
+        $columns = [ 'reference', 'branch_id', 'sector_id', 'category_id', 'organisation_id', 'hcp_id', 'pf_number', 'first_name', 'middle_name', 'last_name', 'gender', 'date_of_birth', 'email', 'phone_number', 'address', 'nin', 'marital_status', 'picture', 'blood_group_id', 'illness', 'date_of_first_appointment', 'occupation', 'designation', 'station', 'hmo_id', 'hmo', 'enrolled_by'];
+
+        // Apply filters based on input parameters
+        if (!is_null($branch)) {
+            $query->where('enrollees.branch_id', $branch);
+        }
+
+
+        if (!is_null($sector))
+        {
+            $query->where('enrollees.sector_id', $sector);
+        }
+
+        if (!is_null($category))
+        {
+            $query->where('enrollees.category_id', $category);
+        }
+
+        if (!is_null($organisation))
+        {
+            $query->where('enrollees.organisation_id', $organisation);
+        }
+
+        if (!is_null($hcp))
+        {
+            $query->where('enrollees.hcp_id', $hcp);
+        }
+
+        if (!is_null($date_from) && !is_null($date_to))
+        {
+            $query->whereBetween('enrollees.created_at', $date_range);
+        }
+
+        $headingRow = $columns;
+
+        $enrollees = $query->select($columns)->get()->toArray();
+        $headingRow = [$headingRow];
+        return Excel::download(new EnrolleesRawExport($enrollees, $headingRow), 'enrollees_'.$date_from.'_'.$date_to.'.xlsx');
+    }
+
+    public function rawImportView()
+    {
+        return view('enrollees.raw_import');
+    }
+
+    public function rawImport(Request $request)
+    {
+        $request->validate([
+            'file' => 'required'
+        ]);
+
+        $file = $request->file('file');
+        Excel::import(new EnrolleesRawImport, $file);
+        return back()->with('success', 'Import completed');
+    }
 }

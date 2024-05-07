@@ -8,6 +8,7 @@ use App\Http\Controllers\HcpController;
 use App\Http\Controllers\OrganisationController;
 use App\Http\Controllers\SectorController;
 use App\Http\Controllers\UserController;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Route;
@@ -48,6 +49,10 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('enrollees/import/template', [EnrolleeController::class, 'downloadTemplate'])->name('enrollee.download')->middleware('can:can_bulk_import_enrollees');
         Route::get('/enrollees/slip/print/{id}', [EnrolleeController::class, 'printSlip'])->name('enrollee.print_slip')->middleware('can:can_print_enrollee_slip');
         Route::get('/enrollees/idcard/print/{id}', [EnrolleeController::class, 'printIdCard'])->name('enrollee.print_id')->middleware('can:can_print_enrollee_id_card');
+        Route::get('/enrollees/raw/export', [EnrolleeController::class, 'rawExportView'])->name('enrollee.raw_export')->middleware('can:can_raw_export');
+        Route::post('/enrollees/raw/export', [EnrolleeController::class, 'rawExport'])->name('enrollee.raw_export_download')->middleware('can:can_raw_export');
+        Route::get('/enrollee/raw/import', [EnrolleeController::class, 'rawImportView'])->name('enrollee.raw_import')->middleware('can:can_raw_import');
+        Route::post('/enrollee/raw/import', [EnrolleeController::class, 'rawImport'])->name('enrollee.raw_import_data')->middleware('can:can_raw_import');
     });
 
     Route::group(['prefix' => 'branches'], function () {
@@ -130,3 +135,10 @@ Route::get('/storage/uploads/{filename}', function ($filename)
     $response->header("Content-Type", $type);
     return $response;
 });
+
+/*Route::get('/calc', function () {
+    $datestring =  '2024-04-28';
+    $date = Carbon::parse($datestring);
+    $daysadd = $date->addDays(130);
+    return $enddate = $daysadd->format('Y-m-d');
+});*/

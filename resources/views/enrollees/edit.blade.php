@@ -108,7 +108,7 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label for="">ID Print Count: <span>{{ number_format($enrollee->id_print_count) }}</span></label>
+                                    <label for="">ID Print Count: <span>{{ number_format($enrollee->id_printout_count) }}</span></label>
                                 </div>
                                 <div class="mb-3">
                                     <label for="gender">Gender <span class="text-danger">*</span></label>

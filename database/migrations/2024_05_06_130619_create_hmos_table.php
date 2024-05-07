@@ -11,13 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('hcps', function (Blueprint $table) {
+        Schema::create('hmos', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('organisation_id');
             $table->string('name');
             $table->string('code');
             $table->unsignedBigInteger('created_by');
-            $table->unsignedBigInteger('updated_by');
+            $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();
         });
     }
@@ -27,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('hcps');
+        Schema::dropIfExists('hmos');
     }
 };

@@ -5,8 +5,8 @@
         <span class="nav-main-link-name">Dashboard</span>
       </a>
     </li>
-    @if(auth()->user()->hasPermissionTo('can_view_enrollees'))
-    <li class="nav-main-item {{ request()->routeIs('user.enrollees') ? 'open' : '' }}">
+    @if(auth()->user()->hasPermissionTo('can_view_enrollees') || auth()->user()->hasPermissionTo('can_raw_export') || auth()->user()->hasPermissionTo('can_raw_import'))
+    <li class="nav-main-item {{ request()->routeIs('user.enrollees') ? 'open' : '' }} {{ request()->routeIs('enrollee.raw_export') ? 'open' : '' }} {{ request()->routeIs('enrollee.raw_import') ? 'open' : '' }}">
       <a class="nav-main-link nav-main-link-submenu" data-toggle="submenu" aria-haspopup="true" aria-expanded="false" href="#">
         <i class="nav-main-link-icon fa fa-users"></i>
         <span class="nav-main-link-name">Enrollee Management</span>
@@ -16,6 +16,20 @@
         <li class="nav-main-item">
           <a class="nav-main-link {{ request()->routeIs('user.enrollees') ? 'active' : '' }}" href="{{ route('user.enrollees') }}">
             <span class="nav-main-link-name">Enrollees</span>
+          </a>
+        </li>
+        @endcan
+        @can('can_raw_export')
+        <li class="nav-main-item">
+          <a class="nav-main-link {{ request()->routeIs('enrollee.raw_export') ? 'active' : '' }}" href="{{ route('enrollee.raw_export') }}">
+            <span class="nav-main-link-name">Raw Export</span>
+          </a>
+        </li>
+        @endcan
+        @can('can_raw_import')
+        <li class="nav-main-item">
+          <a class="nav-main-link {{ request()->routeIs('enrollee.raw_import') ? 'active' : '' }}" href="{{ route('enrollee.raw_import') }}">
+            <span class="nav-main-link-name">Raw Import</span>
           </a>
         </li>
         @endcan

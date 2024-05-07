@@ -88,8 +88,9 @@ class UserController extends Controller
             'category' => 'nullable|integer',
             'organisation' => 'nullable|integer',
             'hcp' => 'nullable|integer',
-            'date_from' => 'nullable|date_format:Y-m-d',
-            'date_to' => 'nullable|date_format:Y-m-d',
+            'date_from' => 'required|date_format:Y-m-d',
+            'date_to' => 'required|date_format:Y-m-d',
+            'format' => 'required'
         ]);
 
         $branch = $request->branch;

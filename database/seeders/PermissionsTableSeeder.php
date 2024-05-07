@@ -20,6 +20,10 @@ class PermissionsTableSeeder extends Seeder
             'can_edit_enrollees',
             'can_delete_enrollees',
             'can_bulk_import_enrollees',
+            'can_print_enrollee_slip',
+            'can_print_enrollee_id_card',
+            'can_export_raw',
+            'can_import_raw',
             //branches
             'can_view_branches',
             'can_create_branches',
@@ -53,7 +57,12 @@ class PermissionsTableSeeder extends Seeder
             'can_grant_permissions',
             //reports
             'can_view_reports',
-            'can_export_reports'
+            'can_export_reports',
+            //roles
+            'can_view_roles',
+            'can_create_roles',
+            'can_edit_roles',
+            'can_delete_roles'
         ];
 
         $data = [];

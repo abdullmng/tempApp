@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Reports')
+@section('title', 'Enrollees Raw Export')
 @section('content')
 <!-- Heading -->
 <div class="block block-rounded">
@@ -9,7 +9,7 @@
             @yield('title')
         </h1>
         <h2 class="fs-sm fw-medium text-muted mb-0">
-            Export Enrollment data in PDF & Excel formats.
+            Export Raw Enrollment data in Excel format.
         </h2>
         </div>
     </div>
@@ -81,19 +81,8 @@
                                 @endif
                             </div>
                             <div class="mb-3">
-                                <label for="format">Format</label>
-                                <select name="format" id="format" class="form-control form-select">
-                                    <option value="">Select format</option>
-                                    <option value="pdf">PDF</option>
-                                    <option value="excel">Excel</option>
-                                </select>
-                                @if ($errors->has('format'))
-                                    <span class="text-sm text-small text-danger">{{ $errors->first('format') }}</span>
-                                @endif
-                            </div>
-                            <div class="mb-3">
                                 <button type="submit" class="btn btn-primary">
-                                    Export
+                                    Export to Excel
                                 </button>
                             </div>
                         </div>

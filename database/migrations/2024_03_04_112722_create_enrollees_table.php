@@ -14,11 +14,11 @@ return new class extends Migration
         Schema::create('enrollees', function (Blueprint $table) {
             $table->id();
             $table->string('reference');
-            $table->unsignedBigInteger('branch_id');
-            $table->unsignedBigInteger('sector_id')->nullable();
-            $table->unsignedBigInteger('organisation_id');
-            $table->unsignedBigInteger('hcp_id')->nullable();
-            $table->unsignedBigInteger('category_id')->nullable();
+            $table->unsignedBigInteger('branch_id')->index();
+            $table->unsignedBigInteger('sector_id')->index()->nullable();
+            $table->unsignedBigInteger('organisation_id')->index();
+            $table->unsignedBigInteger('hcp_id')->index()->nullable();
+            $table->unsignedBigInteger('category_id')->index()->nullable();
             $table->string('pf_number')->nullable();
             $table->string('first_name');
             $table->string('last_name');
@@ -41,6 +41,7 @@ return new class extends Migration
             $table->string('occupation')->nullable();
             $table->string('designation')->nullable();
             $table->string('station')->nullable();
+            $table->unsignedBigInteger('hmo_id')->index();
             $table->bigInteger('hmo')->nullable();
             $table->bigInteger('enrolled_by')->nullable();
             $table->bigInteger('updated_by')->nullable();

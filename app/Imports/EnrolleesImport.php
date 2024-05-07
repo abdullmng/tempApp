@@ -2,13 +2,7 @@
 
 namespace App\Imports;
 
-use App\Models\BloodGroup;
-use App\Models\Branch;
-use App\Models\Category;
 use App\Models\Enrollee;
-use App\Models\Hcp;
-use App\Models\Organisation;
-use App\Models\Sector;
 use Carbon\Carbon;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithBatchInserts;
@@ -24,9 +18,9 @@ class EnrolleesImport implements ToModel, WithHeadingRow, WithChunkReading, With
     */
     public function model(array $row)
     {
-        $reference = !is_null($row["refrence"]) ? $row["refrence"] : $this->generateReference($row);
         $new_dob = !is_null($row['date_of_birth']) ? str_replace('/', '-', $row['date_of_birth']) : '00-00-0000';
         $dob = Carbon::parse($row['date_of_birth'])->format('Y-m-d');//Carbon::createFromFormat('d-m-Y', $new_dob)->format('Y-m-d');
+        $reference = !is_null($row["refrence"]) ? $row["refrence"] : $this->generateReference($row, $dob);
         $email = !is_null($row['email']) ? $row['email'] : $reference.'@fhis.com';
         return new Enrollee([
             'reference' => $reference,
@@ -58,16 +52,33 @@ class EnrolleesImport implements ToModel, WithHeadingRow, WithChunkReading, With
         ]);
     }
 
-    protected function generateReference($row)
+    protected function generateReferenceWithDob($row, $dob)
+    {
+        $year = Carbon::now()->year;
+        $dob = Carbon::parse($dob);
+        $yob = $dob->format('Y');
+        $age = $year - intval($yob);
+        $first_name_char = substr($row['first_name'],0,1);
+        $last_name_char = substr($row['last_name'], 0, 1);
+        $dob_append = str_replace('-','', $dob);
+        $arr = [0,1];
+        $reference = strtoupper($first_name_char.$last_name_char). substr($age,$arr[array_rand($arr, 1)], 1). $dob_append . substr($age,$arr[array_rand($arr, 1)], 1);
+        return $reference;
+    }
+
+    protected function generateReference($row, $dob)
     {
         $first_name_char = substr($row['first_name'],0,1);
         $last_name_char = substr($row['last_name'], 0, 1);
         $random_number = mt_rand(10000000, 99999999);
-        $reference = strtoupper($first_name_char.$last_name_char). $random_number;
-        
+        $reference = $this->generateReferenceWithDob($row, $dob);
         if (Enrollee::where('reference', $reference)->exists())
         {
-            return $this->generateReference($row);
+            $reference = strtoupper($first_name_char.$last_name_char). $random_number;
+            if (Enrollee::where('reference', $reference)->exists())
+            {
+                return $this->generateReference($row, $dob);
+            }
         }
         return $reference;
     }
