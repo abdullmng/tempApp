@@ -84,6 +84,12 @@
       </a>
     </li>
     @endcan
+    <li class="nav-main-item">
+      <a class="nav-main-link {{ request()->routeIs('hmo.index') ? 'active': '' }}" href="{{ route('hmo.index') }}">
+        <i class="nav-main-link-icon fa fa-hand-holding-medical"></i>
+        <span class="nav-main-link-name">Manage HMOs</span>
+      </a>
+    </li>
     @can(('can_view_organisations'))
     <li class="nav-main-item">
       <a class="nav-main-link {{ request()->routeIs('organisation.index') ? 'active': '' }}" href="{{ route('organisation.index') }}">

@@ -5,6 +5,7 @@ use App\Http\Controllers\BranchController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\EnrolleeController;
 use App\Http\Controllers\HcpController;
+use App\Http\Controllers\HmoController;
 use App\Http\Controllers\OrganisationController;
 use App\Http\Controllers\SectorController;
 use App\Http\Controllers\UserController;
@@ -100,6 +101,14 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/{id}', [UserController::class, 'show'])->name('user.show')->middleware('can:can_edit_users');
         Route::post('/{id}', [UserController::class, 'update'])->name('user.update')->middleware('can:can_edit_users');
         Route::get('/delete/{id}', [UserController::class, 'delete'])->name('user.delete')->middleware('can:can_delete_users');
+    });
+
+    Route::group(['prefix'=> 'hmos'], function () {
+        Route::get('/', [HmoController::class,'index'])->name('hmo.index');
+        Route::post('/', [HmoController::class, 'store'])->name('hmo.store');
+        Route::get('/{id}', [HmoController::class, 'show'])->name('hmo.show');
+        Route::post('/{id}', [HmoController::class,'update'])->name('hmo.update');
+        Route::get('/delete/{id}', [HmoController::class, 'delete'])->name('hmo.delete');
     });
 
     Route::group(['prefix' => 'access'], function () {

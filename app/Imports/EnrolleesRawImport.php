@@ -34,17 +34,22 @@ class EnrolleesRawImport implements ToModel, WithHeadingRow, WithChunkReading, W
             'phone_number' => $row['phone_number'],
             'address' => $row['address'],
             'nin' => $row['nin'],
+            'id_printout_count' => $row['id_printout_count'],
             'marital_status' => $row['marital_status'],
             'picture' => $row['picture'],
             'blood_group_id' => $row['blood_group_id'],
             'illness' => $row['illness'],
+            'organization' => $row['organization'],
             'date_of_first_appointment' => $row['date_of_first_appointment'],
             'occupation' => $row['occupation'],
             'designation' => $row['designation'],
             'station' => $row['station'],
             'hmo_id' => $row['hmo_id'],
             'hmo' => $row['hmo'],
-            'enrolled_by' => $row['enrolled_by'] 
+            'enrolled_by' => $row['enrolled_by'],
+            'updated_by' => $row['updated_by'],
+            'created_at' => $row['created_at'],
+            'updated_at' => $row['updated_at'] 
         ]);
     }
 

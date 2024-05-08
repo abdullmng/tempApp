@@ -2,7 +2,7 @@
 
 namespace App\DataTables;
 
-use App\Models\Organisation;
+use App\Models\Hmo;
 use Illuminate\Database\Eloquent\Builder as QueryBuilder;
 use Yajra\DataTables\EloquentDataTable;
 use Yajra\DataTables\Html\Builder as HtmlBuilder;
@@ -12,7 +12,7 @@ use Yajra\DataTables\Html\Editor\Editor;
 use Yajra\DataTables\Html\Editor\Fields;
 use Yajra\DataTables\Services\DataTable;
 
-class OrganisationsDataTable extends DataTable
+class HmosDataTable extends DataTable
 {
     /**
      * Build the DataTable class.
@@ -22,18 +22,15 @@ class OrganisationsDataTable extends DataTable
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
         return (new EloquentDataTable($query))
-            ->addColumn('hmo', function($row) {
-                return $row->hmo_name;
-            })
-            ->addColumn('action', function ($data) {
-                return view('organisations.partials.action', ['data' => $data]);
+            ->addColumn('action', function ($row) {
+                return view('hmos.partials.action', ['data' => $row]);
             });
     }
 
     /**
      * Get the query source of dataTable.
      */
-    public function query(Organisation $model): QueryBuilder
+    public function query(Hmo $model): QueryBuilder
     {
         return $model->newQuery();
     }
@@ -44,7 +41,7 @@ class OrganisationsDataTable extends DataTable
     public function html(): HtmlBuilder
     {
         return $this->builder()
-                    ->setTableId('organisations-table')
+                    ->setTableId('hmos-table')
                     ->addTableClass('responsive')
                     ->columns($this->getColumns())
                     ->minifiedAjax()
@@ -69,7 +66,6 @@ class OrganisationsDataTable extends DataTable
         return [
             Column::make('name'),
             Column::make('code'),
-            Column::computed('hmo'),
             Column::make('created_at'),
             Column::computed('action')
                   ->exportable(false)
@@ -84,6 +80,6 @@ class OrganisationsDataTable extends DataTable
      */
     protected function filename(): string
     {
-        return 'Organisations_' . date('YmdHis');
+        return 'Hmos_' . date('YmdHis');
     }
 }

@@ -38,6 +38,15 @@
                             <form action="" method="post">
                                 @csrf
                                 <div class="mb-3">
+                                    <label for="hmo">HMO</label>
+                                    <select name="hmo_id" id="hmo" class="form-control form-select">
+                                        <option value="">Select HMO</option>
+                                        @foreach ($hmos as $hmo)
+                                            <option value="{{ $hmo->id }}" {{ $organisation->hmo_id == $hmo->id ? 'selected': '' }}>{{ ucfirst($hmo->name) }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="mb-3">
                                     <label for="name">Name</label>
                                     <input type="text" name="name" id="name" class="form-control" value="{{ $organisation->name }}">
                                 </div>

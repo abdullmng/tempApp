@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Organisations')
+@section('title', 'HMOs')
 @section('content')
 <!-- Heading -->
 <div class="block block-rounded">
@@ -9,7 +9,7 @@
             @yield('title')
         </h1>
         <h2 class="fs-sm fw-medium text-muted mb-0">
-            Manage Organisations.
+            Manage HMOs.
         </h2>
         </div>
     </div>
@@ -52,7 +52,7 @@
             <div class="block-content block-content-full">
                 @can(('can_create_organisations'))
                 <div class="mb-4">
-                    <button id="btn-add" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#enroll-modal">Add Organisation +</button>
+                    <button id="btn-add" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#enroll-modal">Add HMO +</button>
                 </div>
                 @endif
                 <div class="table-responsive">
@@ -70,21 +70,12 @@
             <div class="modal-content">
                 <div class="block block-rounded">
                     <div class="block-header">
-                        <h4 class="block-title">Add Organisation</h4>
+                        <h4 class="block-title">Add HMO</h4>
                         <a href="#" data-bs-dismiss="modal" class="btn-close"></a>
                     </div>
                     <div class="block-content">
                         <form action="" method="post">
                             @csrf
-                            <div class="mb-3">
-                                <label for="hmo">HMO</label>
-                                <select name="hmo_id" id="hmo" class="form-control form-select">
-                                    <option value="">Select HMO</option>
-                                    @foreach ($hmos as $hmo)
-                                        <option value="{{ $hmo->id }}">{{ ucfirst($hmo->name) }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
                             <div class="mb-3">
                                 <label for="name">Name</label>
                                 <input type="text" name="name" id="name" class="form-control">
@@ -105,7 +96,7 @@
 @section('js')
     <script>
         setTimeout(() => {
-            $('#organisations-table_processing').hide()
+            $('#hmos-table_processing').hide()
         }, 3000);
     </script>
 @endsection

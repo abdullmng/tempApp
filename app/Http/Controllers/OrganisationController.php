@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\DataTables\OrganisationsDataTable;
+use App\Models\Hmo;
 use App\Models\Organisation;
 use Illuminate\Http\Request;
 
@@ -10,16 +11,24 @@ class OrganisationController extends Controller
 {
     public function index(OrganisationsDataTable $dataTable) 
     {
-        return $dataTable->render('organisations.index');
+        $hmos = Hmo::all();
+        return $dataTable->render('organisations.index', ['hmos' => $hmos]);
     }
 
     public function store(Request $request)
     {
-        $request->validate([
-            'name' => 'required'
+        $this->validate($request, 
+        [
+            'name' => 'required', 
+            'hmo_id' => 'required'
+        ], 
+        [
+            'hmo_id' => 'The HMO field is required'
         ]);
 
         $data = $request->except('_token');
+        $char = substr($request->name,0,3);
+        $data['code'] = uniqid($char);
         $data['created_by'] = auth()->id();
         $data['updated_by'] = auth()->id();
 
@@ -30,12 +39,20 @@ class OrganisationController extends Controller
     public function show($id)
     {
         $organisation = Organisation::find($id);
-        return view('organisations.edit', ['organisation' => $organisation]);
+        $hmos = Hmo::all();
+        return view('organisations.edit', ['organisation' => $organisation, 'hmos' => $hmos]);
     }
 
     public function update($id, Request $request)
     {
-        $request->validate(['name' => 'required']);
+        $this->validate($request, 
+        [
+            'name' => 'required', 
+            'hmo_id' => 'required'
+        ], 
+        [
+            'hmo_id' => 'The HMO field is required'
+        ]);
         $data = $request->except('_token');
         $data['updated_by'] = auth()->id();
         Organisation::where('id', $id)->update($data);

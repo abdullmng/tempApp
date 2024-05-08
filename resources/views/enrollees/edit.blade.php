@@ -259,7 +259,7 @@
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="organisation">Organisation</label>
-                                    <input type="text" name="organization" id="organisation" class="form-control">
+                                    <input type="text" name="organization" id="organisation" class="form-control" value="{{ $enrollee->organisation->name }}">
                                 </div>
                                 <div class="mb-3">
                                     <label for="date_of_first_appointment">Date of First Appointment</label>
@@ -281,7 +281,7 @@
                                 </div>
                                 <div class="mb-3">
                                     <label for="hmo">HMO</label>
-                                    <input type="text" name="hmo" id="hmo" class="form-control form-control-alt" readonly>
+                                    <input type="text" name="hmo" id="hmo" class="form-control form-control-alt" readonly value="{{ $enrollee->hmo }}">
                                 </div>
                             </div>
                         </div>

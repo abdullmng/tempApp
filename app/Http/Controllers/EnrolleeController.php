@@ -34,7 +34,8 @@ class EnrolleeController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
+        $this->validate($request,
+        [
             'branch_id' => 'required',
             'sector_id' => 'required',
             'organisation_id' => 'required',
@@ -42,11 +43,18 @@ class EnrolleeController extends Controller
             'last_name'=> 'required',
             'phone_number' => 'required',
             'date_of_birth' => 'required',
+        ], [
+            'branch_id' => 'The branch field is required',
+            'sector_id' => 'The sector field is required',
+            'organisation_id' => 'The organisation field is required'
         ]);
         
         $ref = $this->generateReference($request);
+        $organisation = Organisation::where('id', $request->organisation_id)->first();
         $data = $request->except('_token');
         $data['reference'] = $ref;
+        $data['hmo_id'] = $organisation->hmo_id;
+        $data['hmo'] = $organisation->hmo_name;    
         $data['enrolled_by'] = auth()->id();
         if (is_null($data['email'])) {
             $data['email'] = $ref.'@fhis.com';
@@ -125,6 +133,13 @@ class EnrolleeController extends Controller
             'hcp_id' => 'required',
             'blood_group_id' => 'required'
         ];
+        $this->validate( $request, 
+        $rules, [
+            'branch_id' => 'The branch field is required',
+            'organisation_id' => 'The organisation field is required',
+            'hcp_id' => 'The HCP field is required',
+            'blood_group_id' => 'The blood group field is required'
+        ]);
         $request->validate($rules);
         $enrollee = Enrollee::where('id', $id)->first();
         $data = $request->except('_token');
@@ -152,6 +167,9 @@ class EnrolleeController extends Controller
             $picture = $request->picture_bin;
             $data['picture'] = $picture;
         }
+        $organisation = Organisation::where('id', $request->organisation_id)->first();
+        $data['hmo_id'] = $organisation->hmo_id;
+        $data['hmo'] = $organisation->hmo_name;    
         $data['updated_by'] = auth()->id();
         $enrollee->update($data);
         return back()->with('success','Enrollee data updated successfully');
@@ -276,7 +294,7 @@ class EnrolleeController extends Controller
 
         $query = Enrollee::query();
 
-        $columns = [ 'reference', 'branch_id', 'sector_id', 'category_id', 'organisation_id', 'hcp_id', 'pf_number', 'first_name', 'middle_name', 'last_name', 'gender', 'date_of_birth', 'email', 'phone_number', 'address', 'nin', 'marital_status', 'picture', 'blood_group_id', 'illness', 'date_of_first_appointment', 'occupation', 'designation', 'station', 'hmo_id', 'hmo', 'enrolled_by'];
+        $columns = ['reference', 'branch_id', 'sector_id', 'category_id', 'organisation_id', 'hcp_id', 'pf_number', 'first_name', 'middle_name', 'last_name', 'gender', 'date_of_birth', 'email', 'phone_number', 'address', 'nin', 'id_printout_count', 'marital_status', 'picture', 'blood_group_id', 'illness', 'organization', 'date_of_first_appointment', 'occupation', 'designation', 'station', 'hmo_id', 'hmo', 'enrolled_by', 'updated_by', 'created_at', 'updated_at'];
 
         // Apply filters based on input parameters
         if (!is_null($branch)) {
