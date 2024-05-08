@@ -104,11 +104,11 @@ Route::group(['middleware' => 'auth'], function () {
     });
 
     Route::group(['prefix'=> 'hmos'], function () {
-        Route::get('/', [HmoController::class,'index'])->name('hmo.index');
-        Route::post('/', [HmoController::class, 'store'])->name('hmo.store');
-        Route::get('/{id}', [HmoController::class, 'show'])->name('hmo.show');
-        Route::post('/{id}', [HmoController::class,'update'])->name('hmo.update');
-        Route::get('/delete/{id}', [HmoController::class, 'delete'])->name('hmo.delete');
+        Route::get('/', [HmoController::class,'index'])->name('hmo.index')->middleware('can:can_view_hmos');
+        Route::post('/', [HmoController::class, 'store'])->name('hmo.store')->middleware('can:can_create_hmos');
+        Route::get('/{id}', [HmoController::class, 'show'])->name('hmo.show')->middleware('can:can_view_hmos');
+        Route::post('/{id}', [HmoController::class,'update'])->name('hmo.update')->middleware('can:can_edit_hmos');
+        Route::get('/delete/{id}', [HmoController::class, 'delete'])->name('hmo.delete')->middleware('can:can_delete_hmos');
     });
 
     Route::group(['prefix' => 'access'], function () {

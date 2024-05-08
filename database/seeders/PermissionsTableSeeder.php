@@ -62,7 +62,12 @@ class PermissionsTableSeeder extends Seeder
             'can_view_roles',
             'can_create_roles',
             'can_edit_roles',
-            'can_delete_roles'
+            'can_delete_roles',
+            //HMOs
+            'can_view_hmos',
+            'can_create_hmos',
+            'can_edit_hmos',
+            'can_delete_hmos'
         ];
 
         $data = [];

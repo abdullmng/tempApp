@@ -50,7 +50,7 @@
     <div class="col-md-12">
         <div class="block block-rounded">
             <div class="block-content block-content-full">
-                @can(('can_create_organisations'))
+                @can(('can_create_hmos'))
                 <div class="mb-4">
                     <button id="btn-add" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#enroll-modal">Add HMO +</button>
                 </div>
